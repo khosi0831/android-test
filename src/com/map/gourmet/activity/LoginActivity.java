@@ -31,29 +31,29 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         
         //レイアウトの作成
         LinearLayout layout = new LinearLayout(this);
-        layout.setBackgroundColor(Color.rgb(255, 255, 255));
+//        layout.setBackgroundColor(Color.rgb(255, 255, 255));
         layout.setOrientation(LinearLayout.VERTICAL);
         setContentView(layout);
-        
+
         userId=new EditText(this);
         userId.setText("userId", EditText.BufferType.NORMAL);
         userId.setLayoutParams(new LinearLayout.LayoutParams(MP, WC));
-//        setContentView(userId);
+        layout.addView(userId);
         
         passwd=new EditText(this);
         passwd.setText("passwd", EditText.BufferType.NORMAL);
         passwd.setLayoutParams(new LinearLayout.LayoutParams(MP, WC));
-//        setContentView(passwd);
+        layout.addView(passwd);
         
         //ＯKボタンの生成
         okBtn = new Button(this);
         okBtn.setText("OK");
-        okBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC+100));
+        okBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC));
         okBtn.setOnClickListener(this);
         okBtn.setTag("ok");
         layout.addView(okBtn);
         
-        //NGボタンの生成
+        //CANCELボタンの生成
         cancelBtn = new Button(this);
         cancelBtn.setText("CANCEL");
         cancelBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC+100));
@@ -71,18 +71,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
 
     }
     
-    //ボタンクリック時に呼ばれる
     public void onClick(View v) {
-    	String tag = (String)v.getTag();
-    	if ( tag.equals("new") ) {
-    		Intent intent = new Intent(this, com.map.gourmet.activity.CreateUserActivity.class);
-    		intent.putExtra("text", "param1");
-    		startActivityForResult(intent, REQUEST_TEXT);
-    	}
-    	if ( tag.equals("ok") ) {
-    		Intent intent = new Intent(this, com.map.gourmet.activity.ShopEditActivity.class);
-    		intent.putExtra("text", "param1");
-    		startActivityForResult(intent, REQUEST_TEXT);
+    	try {
+	    	String tag = (String)v.getTag();
+	    	if ( tag.equals("new") ) {
+	    		Intent intent = new Intent(this, com.map.gourmet.activity.CreateUserActivity.class);
+	    		intent.putExtra("text", "param1");
+	    		startActivityForResult(intent, REQUEST_TEXT);
+	    	}
+	    	if ( tag.equals("ok") ) {
+	    		if ( httpTransfar(userId.getText().toString(), passwd.getText().toString())) {
+		    		Intent intent = new Intent(this, com.map.gourmet.activity.ShopEditActivity.class);
+		    		intent.putExtra("text", "param1");
+		    		startActivityForResult(intent, REQUEST_TEXT);
+	    		}
+	    	}
+    	} catch (Exception e) {
+    		
     	}
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
