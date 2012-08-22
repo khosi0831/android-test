@@ -5,11 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.Toast;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener{
 	private final static int WC=LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -21,54 +28,60 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
 	private Button newBtn;
 	
 	private final static int REQUEST_TEXT = 0;
-	
+    private InputFilter[] filters = { new MyFilter() };
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        super.test = "bbb";
-        
-        //レイアウトの作成
-        LinearLayout layout = new LinearLayout(this);
-//        layout.setBackgroundColor(Color.rgb(255, 255, 255));
-        layout.setOrientation(LinearLayout.VERTICAL);
-        setContentView(layout);
 
+        super.test = "bbb";
+    	super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        
+        TableLayout tableLayout = new TableLayout(this);
+        tableLayout.setBackgroundColor(Color.rgb(255, 255, 255));
+        setContentView(tableLayout, new LayoutParams(LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT));
+
+        TableRow tableRow1 = new TableRow(this);
         userId=new EditText(this);
         userId.setText("userId", EditText.BufferType.NORMAL);
-        userId.setLayoutParams(new LinearLayout.LayoutParams(MP, WC));
-        layout.addView(userId);
+//        userId.setFilters(filters);
+        TableRow.LayoutParams rowLayout = new TableRow.LayoutParams();
+        rowLayout.span = 2;
+        tableRow1.addView(userId,rowLayout);
         
+        TableRow tableRow2 = new TableRow(this);
         passwd=new EditText(this);
         passwd.setText("passwd", EditText.BufferType.NORMAL);
-        passwd.setLayoutParams(new LinearLayout.LayoutParams(MP, WC));
-        layout.addView(passwd);
+        passwd.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        tableRow2.addView(passwd, rowLayout);
         
+        TableRow tableRow3 = new TableRow(this);
         //ＯKボタンの生成
         okBtn = new Button(this);
         okBtn.setText("OK");
-        okBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC));
         okBtn.setOnClickListener(this);
         okBtn.setTag("ok");
-        layout.addView(okBtn);
+        tableRow3.addView(okBtn);
         
         //CANCELボタンの生成
         cancelBtn = new Button(this);
         cancelBtn.setText("CANCEL");
-        cancelBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC+100));
         cancelBtn.setOnClickListener(this);
         cancelBtn.setTag("cancel");
-        layout.addView(cancelBtn);
+        tableRow3.addView(cancelBtn);
         
         //ユーザ作成ボタンの生成
         newBtn = new Button(this);
         newBtn.setText("新規作成");
-        newBtn.setLayoutParams(new LinearLayout.LayoutParams(WC, WC+100));
         newBtn.setOnClickListener(this);
         newBtn.setTag("new");
-        layout.addView(newBtn);
+        tableRow3.addView(newBtn);
 
+        tableLayout.addView(tableRow1);
+        tableLayout.addView(tableRow2);
+        tableLayout.addView(tableRow3);
     }
     
     public void onClick(View v) {
@@ -80,15 +93,34 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
 	    		startActivityForResult(intent, REQUEST_TEXT);
 	    	}
 	    	if ( tag.equals("ok") ) {
+	    		if ( ! isAlpha(userId.getText().toString())) {
+	    			showDialog(this, "ユーザ名", "半角英数字で入力してください");
+	    			return;
+	    		}
 	    		if ( httpTransfar(userId.getText().toString(), passwd.getText().toString())) {
 		    		Intent intent = new Intent(this, com.map.gourmet.activity.ShopEditActivity.class);
 		    		intent.putExtra("text", "param1");
 		    		startActivityForResult(intent, REQUEST_TEXT);
+	    		} else {
+	    			showDialog(this, "認証", "認証に失敗しました。。。");
 	    		}
 	    	}
     	} catch (Exception e) {
     		
     	}
+    }
+    class MyFilter implements InputFilter {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end,
+                        Spanned dest, int dstart, int dend) {
+                if( source.toString().matches("^[a-zA-Z0-9]+$") ){
+                	Toast toast = Toast.makeText(LoginActivity.this, "ユーザ名は半角英数字で入力してください。", Toast.LENGTH_LONG);
+                	toast.show();
+                	return source;
+                }else{
+                	return "";
+                }
+        }
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
     	if ( requestCode == REQUEST_TEXT && resultCode == RESULT_OK) {

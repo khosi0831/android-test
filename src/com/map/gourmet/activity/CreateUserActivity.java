@@ -17,6 +17,9 @@ public  class CreateUserActivity  extends BaseActivity implements View.OnClickLi
 	private final static int WC=LinearLayout.LayoutParams.WRAP_CONTENT;
 	private final static int MP=LinearLayout.LayoutParams.MATCH_PARENT;
 	private final static int REQUEST_TEXT = 0;
+	private EditText userId;
+	private EditText passwd;
+	private EditText email;
 	private Button okBtn;
 	private Button cancelBtn;
 
@@ -40,6 +43,17 @@ public  class CreateUserActivity  extends BaseActivity implements View.OnClickLi
         layout.setOrientation(LinearLayout.VERTICAL);
         setContentView(layout);
         
+        userId=new EditText(this);
+        userId.setText("userId", EditText.BufferType.NORMAL);
+        layout.addView(userId);
+        
+        passwd=new EditText(this);
+        passwd.setText("passwd", EditText.BufferType.NORMAL);
+        layout.addView(passwd);
+
+        email=new EditText(this);
+        email.setText("email", EditText.BufferType.NORMAL);
+        layout.addView(email);
         
         okBtn = new Button(this);
         okBtn.setText("OK");

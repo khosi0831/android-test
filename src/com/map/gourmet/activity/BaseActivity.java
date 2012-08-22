@@ -45,6 +45,13 @@ public class BaseActivity  extends Activity{
       }
       return encodedStr;
     }
-	
+	protected boolean isAlpha(String str) {
+        if( str.matches("^[a-zA-Z0-9]+$") ){
+    		return true;
+        } else {
+    		return false;
+        	
+        }
+	}
 
 }
